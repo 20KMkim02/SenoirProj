@@ -33,9 +33,25 @@
     - [1.0.5 Hyperparameter Tuning](#105-hyperparameter-tuning)
     - [1.0.5 Result](#105-result)
   - [PostureDetect 1.0.6](#posturedetect-106)
-    - [1.0.6 DataSet](#106-dataset)
-    - [1.0.6 Hyperparameter Tuning](#106-hyperparameter-tuning)
-    - [1.0.6 Result](#106-result)
+  - [PostureDetect 1.0.7](#posturedetect-107)
+    - [1.0.7 Result](#107-result)
+  - [PostureDetect 1.0.8](#posturedetect-108)
+  - [PostureDetect 1.0.9](#posturedetect-109)
+    - [1.0.9 Result](#109-result)
+  - [PostureDetect 1.1.0](#posturedetect-110)
+    - [1.1.0 DataSet](#110-dataset)
+    - [1.1.0 Hyperparameter Tuning](#110-hyperparameter-tuning)
+    - [1.1.0 Result](#110-result)
+  - [PostureDetect 1.1.1](#posturedetect-111)
+    - [1.1.1 Hyperparameter Tuning](#111-hyperparameter-tuning)
+    - [1.1.1 Result](#111-result)
+  - [PostureDetect 1.1.2](#posturedetect-112)
+    - [1.1.2 Hyperparameter Tuning](#112-hyperparameter-tuning)
+    - [1.1.2 Result](#112-result)
+  - [PostureDetect 1.1.8](#posturedetect-118)
+    - [1.1.8 Hyperparameter Tuning](#118-hyperparameter-tuning)
+    - [1.1.8 Result](#118-result)
+- [Insight :](#insight-)
 ---
 # What we do :
 โปรเจคนี้เกิดจากการร่วมมือของ Takasako กับ Chula Computer Science เนื่องจากความต้องการลดการใช้แอร์ภายในห้างและอาคารเพราะประเทศไทยมีการติดตั้งเครื่องปรับอากาศเพิ่มขึ้นอย่างต่อเนื่องและหลายๆตึกอาคารมีการใช้แอร์ที่อุณหภูมิต่ำเกินความจำเป็น ซึ่งเป็นสาเหตุให้เกิดการใช้จ่ายในค่าไฟที่มากขึ้น
@@ -190,8 +206,10 @@
 
 ## PostureDetect 1.0.4
 ### 1.0.4 DataSet
-ไม่ได้มีการเปลี่ยนแปลงใดๆ แค่ลองมาปรับ Hyperparameter เพื่อเช็คดูว่า ปัญหาอยู่ที่ mosaic จริงไหม
+ลองปรับ Data set เนื่องจากคิดว่าที่โมเดลจับ Inactiveได้ไม่ดีนั้นเกิดจากการที่มันเอา Inactive ที่นั่งอยู่กับโต๊ะมาปนกับที่นั่งโซฟา เลยทำการแยก class จาก Inactive -> Inactive กับ Sofa-Inactive และทำการหา data เพิ่ม ตนได้อัตราส่วนข้อมูลดังนี้
+Inactive : Standwalk : Sofa-Inactive : Laydown ; 1178 : 3496 : 220 : 356
 ### 1.0.4 Hyperparameter Tuning
+- Train Val Test ; 75 : 15 : 10
 - epochs: 150
 - <span style="color:orange">batch: 64</span>
 - patience: 20
@@ -199,14 +217,146 @@
 - <span style="color:orange">weight_decay: 0.001</span>
 - mosaic: 0.7
 ### 1.0.4 Result
+![](/Posture/1.0.4CM.png)
+![](/Posture/1.0.4results.png)
+![](/Posture/1.0.4PR_curve.png)
+ผลที่ได้คือโมเดลมีความ Overfitting เล็กน้อย แต่ เสียความสามารถในการจับClass Inactive ไปอย่างมาก ข้อสรุปคือไม่ควรแยก Inactive ออก เป็น 2 classes และค่า mAP ค่อนข้างน้อย อยู่ที่ 0.702
 
 ## PostureDetect 1.0.5
+ลองมาTune hyperparameter เพื่อเช็คสมติฐานว่า การแยก Inactive นั้นไม่ดีจริงหรือไม่
 ### 1.0.5 DataSet
+เดิม
 ### 1.0.5 Hyperparameter Tuning
+- Train Val Test ; 75 : 15 : 10
+- epochs: 150
+- <span style="color:orange">batch: 16</span>
+- patience: 20
+- optimizer: AdamW
+- weight_decay: 0.001
+- <span style="color:orange">mosaic: 0</span>
 ### 1.0.5 Result
-
+![](/Posture/1.0.5CM.png)
+![](/Posture/1.0.5results.png)
+![](/Posture/1.0.5PR_curve.png)
+ผลคือ Overfitting หนักมาก และ mAPก็ต่ำ PrecisionRecall ของแต่ละ class ก็น้อย โมเดลทำงานได้ไม่ดีเลย
 
 ## PostureDetect 1.0.6
-### 1.0.6 DataSet
-### 1.0.6 Hyperparameter Tuning
-### 1.0.6 Result
+ทำการTune model และได้ข้อสรุปว่าจะไม่แยก Inactvie เป็น Inactive กับ Sofa-Inactive แล้ว
+
+## PostureDetect 1.0.7
+ทดลองใช้ model YoloV8m ที่เป็น model ที่ลงละเอียดกว่า nano ซึ่งไม่ได้ให้ผลดีเลย เนื่องจากโมเดลค่อนข้าง Complex เลยเกิดปัญหา Class Imbalance ได้ง่ายกว่า และ Overfit ได้มากกว่าด้วย
+### 1.0.7 Result
+![](/Posture/1.0.7CM.png)
+![](/Posture/1.0.7results.png)
+![](/Posture/1.0.7PR_curve.png)
+
+## PostureDetect 1.0.8
+แก้ไขปรับปรุงการ label ต่างๆ ยุบ Inactive เข้าด้วยกัน, ลงรายละเอียดการ label ให้ชัดเจนและครอบคลุมขึ้น
+
+## PostureDetect 1.0.9
+ในversionนี้มีการTune hyperparameter เยอะมากๆ เพื่อหารูปแบบที่ดีที่สุด
+- 1.0.9.1 ;
+  - เพิ่ม Dropout 
+  - patience : 10
+  - weightdecay : 0.005
+- 1.0.9.2 ;
+  - batchsize : 32
+- 1.0.9.3 ;
+  - patience : 20
+  - batchsize : 64
+- 1.0.9.4 ;
+  - <span style="color:lightgreen">freeze : 10</span>
+- 1.0.9.5 ;
+  - <span style="color:orange">freeze : 0</span>
+  - batchsize : 32
+  - weightdecay : 0.0005
+- 1.0.9.6 ;
+  - weightdecay : 0.009
+### 1.0.9 Result
+โดยรวมคือเกิดโมเดลที่มีความ Overfit มากๆ ได้เข้าใจการปรับTune Hyperparameter มากขึ้น (freeze ไม่เหมาะกับการใช้ทำงานนี้เลย) และ เข้าใจปัญหาที่แท้จริงของงาน ซึ่งเกิดจากการที่ Data ของเรา 1.ไม่เพียงพอ 2.ไม่ blalance ทำให้ model ลำเอียง 
+![](/Posture/1.0.9.4results.png)
+1.9.0.4
+![](/Posture/1.0.9.6results.png)
+1.9.0.6
+
+## PostureDetect 1.1.0
+### 1.1.0 DataSet
+แก้ไขปัญหา Class Imbalance โดยการปรับDataset ครั้งใหญ่ <br>
+1. ทำการเก็บ Dataset เพิ่มให้ได้มากที่สุดเท่าที่จะทำได้ ภายในกล้อง ตลอด 1 เดืิอน สาเหตุที่ใช้ตลอด 1 เดือน เนื่องจาก ข้อมูลที่มีนั้นมีเก็บไว้อยู่ 2 เดือนคือ ช่วง Nov-Janโดยการตรวจจับ นำโมเดลมาใช้งานจริงจะเกิดกับช่วง Jan-April ถ้าเราใช้ข้อมูล 2 เดือนเต็มๆ เท่ากับเราจะให้โมเดลทำงานที่ทุ่นแรง ได้ 2เดือน หรือ แค่ 50% ของงานทั้งหมด ดังนั้นเลยถ้าจะให้โมเดลเกิดประสิทธิภาพของการทำงานสูงสุด เลยใช้ข้อมูลเทรนแค่ 1เดือน และ test ทั้งหมด 4 เดือน ทุ่นแรงได้ 4 เท่า 
+2. ทำ Pre Augment
+   1. โดยการนำ Minority class (Inactive กับ Laydown) มาใช้ในการ Augment ก่อนจะเข้าไป Augment หลักต่อ
+   - Grayscale : สร้างGeneralize ให้โมเดลเรียนรู้
+   - Flip Horizontal : ให้โมเดลไม่แยกซ้ายขวา
+   - Exposure alpha=1.5 beta=30  : ทำให้โมเดลเห็นคนเมื่อแสงสว่าง หรือมืดไป
+  ผลที่ได้คือ จะได้ Inactive : Standwalk : Laydown ; 3219 : 2220 : 798
+   2. หลังจากนั้น ทำการ Augment ภาพทั้งหมด เพื่อเพิ่ม Dataset โดย
+   - Rotate +- 15 deg เมื่อคนเอียงตัวโมเดลยังคงจับภาพได้อยู่
+   - Blur 2px เอาไว้จับพวก Motion blur ทั้งหลาย
+   - สร้าง Contrast +- 15%
+ 
+### 1.1.0 Hyperparameter Tuning
+- Train Val Test ; 75 : 15 : 10
+- epochs: 200
+- batch: 32
+- patience: 20
+- optimizer: AdamW
+- weight_decay: 0.0005
+- model: YoloV8m
+### 1.1.0 Result
+![](/Posture/1.1.0CM.png)
+![](/Posture/1.1.0results.png)
+![](/Posture/1.1.0PR_curve.png)
+เกิด Early stop ที่ 120 epoch และ ได้ mAP ต่ำ คิดว่าต้อง tune hyperparameter เพิ่ม
+## PostureDetect 1.1.1
+### 1.1.1 Hyperparameter Tuning
+- Train Val Test ; 75 : 15 : 10
+- epochs: 200
+- <span style="color:orange">batch: 16</span>
+- patience: 20
+- optimizer: AdamW
+- weight_decay: 0.0005
+- model: YoloV8m
+### 1.1.1 Result
+![](/Posture/1.1.1CM.png)
+![](/Posture/1.1.1results.png)
+![](/Posture/1.1.1PR_curve.png)
+ปัญหาไม่ได้อยู่ที่ batch size แต่เป็นที่ model too complex
+
+## PostureDetect 1.1.2
+### 1.1.2 Hyperparameter Tuning
+- Train Val Test ; 75 : 15 : 10
+- epochs: 200
+- <span style="color:orange">batch: 32</span>
+- patience: 20
+- optimizer: AdamW
+- weight_decay: 0.0005
+- <span style="color:orange">model: YoloV8n</span>
+### 1.1.2 Result
+![](/Posture/1.1.2CM.png)
+![](/Posture/1.1.2results.png)
+![](/Posture/1.1.2PR_curve.png)
+หลังจากนี้จะลองปรับๆ Hyperparameterดูเรื่อยๆ โดยหลังจาก Tuneไปจนถึงโมเดลที่ 1.1.8 นั้นก็ได้ Modelที่เหมาะสมออกมา
+
+## PostureDetect 1.1.8
+### 1.1.8 Hyperparameter Tuning
+- Train Val Test ; 80 : 20 ไม่ใช่testแล้วเนื่องจาก จะนำไปใช้กับ Real data เลย
+- epochs: 200
+- batch: 32
+- patience: 20
+- optimizer: AdamW
+- weight_decay: 0.05
+- model: YoloV8n
+### 1.1.8 Result
+ใช้ไปทั้งหมด 110 epoch
+![](/Posture/1.1.8CM.png)
+สังเกตได้ว่าการจับ Inactive ถึงแม้มันจะกลายเป็น Majority class ก็ยังทำได้ไม่เกิน 0.8 แต่มาได้ดีที่สุดแล้ว เนื่องจากทรงท่าทางมันคล้ายกับการนั่ง Activeมาก <br>
+และ Layown กับ Standwalk ที่มีความชัดเจนในท่าทางก็สามารถทำงานได้อย่างมีประสิทธิภาพแล้วด้วย
+![](/Posture/1.1.8results.png)
+![](/Posture/1.1.8PR_curve.png)
+mAP ที่ได้อยู่ในระดับที่น่าพึงพอใจ โมเดลสามารถตอบสนองกับภาพทดสอบได้ถึง 83.5% ในการตรวจจับ
+![](/Posture/1.1.8ClassLoss.png)
+![](/Posture/1.1.8Loss.png)
+ในด้าน Loss ก็สามารถทำได้ดี คือมีความPerfect fit ไม่ Overfit หรือ Underfit เกินไป
+
+# Insight :
+พาร์ทนี้ไม่สามารถโชว์ได้ ข้อมูลเป็นของมหาลัยและ บริษัท
