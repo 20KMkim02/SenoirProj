@@ -355,8 +355,10 @@ Inactive : Standwalk : Sofa-Inactive : Laydown ; 1178 : 3496 : 220 : 356
 ![](/Posture/1.1.8PR_curve.png)
 mAP ที่ได้อยู่ในระดับที่น่าพึงพอใจ โมเดลสามารถตอบสนองกับภาพทดสอบได้ถึง 83.5% ในการตรวจจับ
 ![](/Posture/1.1.8ClassLoss.png)
-![](/Posture/1.1.8Loss.png)
+![](/Posture/1.1.8Loss.png)<br>
 ในด้าน Loss ก็สามารถทำได้ดี คือมีความPerfect fit ไม่ Overfit หรือ Underfit เกินไป
 
+และสิ่งที่ได้เพิ่มมาคือ ถ้าเราพยายามทำใ้ห Inactive เกิด Precision ที่มากขึ้น จะต้องแลกมากับ Model ที่Too complex ไม่ general และไม่สามารถจับกับ real data ได้<br>
+ซึ่งเราไม่ต้องการ Overfitting model เนื่องจากจะทำให้การนำไปใช้งานข้อมูลหลังจากนั้นจะเกิดความผิดพลาดเยอะกว่าที่ได้รับ
 # Insight :
 พาร์ทนี้ไม่สามารถโชว์ได้ ข้อมูลเป็นของมหาลัยและ บริษัท
